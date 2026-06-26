@@ -1,31 +1,28 @@
-# Maze Solver using DFS
-# Author: Group AI003
+import matplotlib.pyplot as plt
+import numpy as np
 
-# Sample maze (0 = path, 1 = wall)
-maze = [
-    [0, 1, 0, 0, 0],
-    [0, 1, 0, 1, 0],
-    [0, 0, 0, 1, 0],
-    [0, 1, 1, 1, 0],
-    [0, 0, 0, 0, 0]
-]
+maze = np.array([
+    [1, 0, 1, 1, 1],
+    [1, 0, 0, 0, 1],
+    [1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 1],
+    [0, 0, 1, 1, 1]
+])
 
-start = (0, 0)   # top-left corner
-end = (4, 4)     # bottom-right corner
+start = (0, 1)   # đổi sang ô trống
+end = (4, 0)     # đổi sang ô trống
 
-# Directions: up, down, left, right
 moves = [(-1,0), (1,0), (0,-1), (0,1)]
 
 def is_valid(x, y, maze, visited):
-    return (0 <= x < len(maze) and 
-            0 <= y < len(maze[0]) and 
-            maze[x][y] == 0 and 
+    return (0 <= x < len(maze) and
+            0 <= y < len(maze[0]) and
+            maze[x][y] == 0 and
             (x,y) not in visited)
 
 def dfs(maze, start, end):
     stack = [(start, [start])]
     visited = set()
-
     while stack:
         (x, y), path = stack.pop()
         if (x, y) == end:
@@ -39,9 +36,13 @@ def dfs(maze, start, end):
 
 solution = dfs(maze, start, end)
 
+plt.figure(figsize=(5,5))
+plt.imshow(maze, cmap='binary', origin='upper')
+
 if solution:
-    print("Path found:")
-    for step in solution:
-        print(step)
-else:
-    print("No path exists!")
+    xs, ys = zip(*solution)
+    plt.plot(ys, xs, color='red', linewidth=2)
+
+plt.title("Maze Solution (DFS)")
+plt.axis('off')
+plt.show()
