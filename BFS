@@ -1,0 +1,43 @@
+from collections import deque
+
+maze = [
+    [0, 1, 0, 0, 0],
+    [0, 1, 0, 1, 0],
+    [0, 0, 0, 1, 0],
+    [0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0]
+]
+
+start = (0, 0)
+end = (4, 4)
+moves = [(-1,0), (1,0), (0,-1), (0,1)]
+
+def is_valid(x, y, maze, visited):
+    return (0 <= x < len(maze) and 
+            0 <= y < len(maze[0]) and 
+            maze[x][y] == 0 and 
+            (x,y) not in visited)
+
+def bfs(maze, start, end):
+    queue = deque([(start, [start])])
+    visited = set([start])
+
+    while queue:
+        (x, y), path = queue.popleft()
+        if (x, y) == end:
+            return path
+        for dx, dy in moves:
+            nx, ny = x + dx, y + dy
+            if is_valid(nx, ny, maze, visited):
+                visited.add((nx, ny))
+                queue.append(((nx, ny), path + [(nx, ny)]))
+    return None
+
+solution = bfs(maze, start, end)
+
+if solution:
+    print("Shortest path found:")
+    for step in solution:
+        print(step)
+else:
+    print("No path exists!")
