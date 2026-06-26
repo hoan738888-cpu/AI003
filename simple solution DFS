@@ -1,0 +1,47 @@
+# Maze Solver using DFS
+# Author: Group AI003
+
+# Sample maze (0 = path, 1 = wall)
+maze = [
+    [0, 1, 0, 0, 0],
+    [0, 1, 0, 1, 0],
+    [0, 0, 0, 1, 0],
+    [0, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0]
+]
+
+start = (0, 0)   # top-left corner
+end = (4, 4)     # bottom-right corner
+
+# Directions: up, down, left, right
+moves = [(-1,0), (1,0), (0,-1), (0,1)]
+
+def is_valid(x, y, maze, visited):
+    return (0 <= x < len(maze) and 
+            0 <= y < len(maze[0]) and 
+            maze[x][y] == 0 and 
+            (x,y) not in visited)
+
+def dfs(maze, start, end):
+    stack = [(start, [start])]
+    visited = set()
+
+    while stack:
+        (x, y), path = stack.pop()
+        if (x, y) == end:
+            return path
+        visited.add((x, y))
+        for dx, dy in moves:
+            nx, ny = x + dx, y + dy
+            if is_valid(nx, ny, maze, visited):
+                stack.append(((nx, ny), path + [(nx, ny)]))
+    return None
+
+solution = dfs(maze, start, end)
+
+if solution:
+    print("Path found:")
+    for step in solution:
+        print(step)
+else:
+    print("No path exists!")
