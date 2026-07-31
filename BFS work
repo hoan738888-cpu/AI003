@@ -1,0 +1,77 @@
+import matplotlib.pyplot as plt
+import numpy as np
+from collections import deque
+
+# Mê cung: 0 = đường đi, 1 = tường
+maze = [
+    [0,0,1,0,0,0],
+    [1,0,1,0,1,0],
+    [0,0,0,0,1,0],
+    [0,1,1,0,0,0],
+    [0,0,0,1,1,0],
+    [1,1,0,0,0,0],
+    [0,0,0,1,0,1],
+    [0,1,0,0,0,0],
+    [0,0,0,1,0,0],
+    [1,0,1,1,1,0],
+    [0,0,0,1,1,0],
+    [0,1,0,1,1,0]
+]
+
+rows, cols = len(maze), len(maze[0])
+start = (0,0)
+end = (rows-1, cols-1)
+
+def bfs(maze, start, end):
+    queue = deque([start])
+    visited = set([start])
+    parent = {start: None}
+    order = []  # lưu thứ tự duyệt
+
+    while queue:
+        r, c = queue.popleft()
+        order.append((r,c))
+        if (r,c) == end:
+            break
+        for dr, dc in [(1,0),(-1,0),(0,1),(0,-1)]:
+            nr, nc = r+dr, c+dc
+            if 0 <= nr < rows and 0 <= nc < cols and maze[nr][nc] == 0 and (nr,nc) not in visited:
+                visited.add((nr,nc))
+                parent[(nr,nc)] = (r,c)
+                queue.append((nr,nc))
+    # dựng đường đi ngắn nhất
+    path = []
+    node = end
+    while node:
+        path.append(node)
+        node = parent.get(node)
+    path.reverse()
+    return path, order
+
+path, order = bfs(maze, start, end)
+
+# Vẽ mê cung
+grid = np.zeros((rows, cols, 3))  # RGB
+for r in range(rows):
+    for c in range(cols):
+        if maze[r][c] == 1:
+            grid[r,c] = [0,0,0]  # tường màu đen
+        else:
+            grid[r,c] = [1,1,1]  # nền trắng
+
+# tô các ô BFS duyệt (đường sai) màu đỏ
+for r,c in order:
+    if (r,c) not in path:
+        grid[r,c] = [1,0,0]  # đỏ
+
+# tô đường đi đúng màu vàng
+for r,c in path:
+    grid[r,c] = [1,1,0]  # vàng
+
+# tô start và end
+grid[start] = [0,1,0]  # xanh lá
+grid[end] = [1,0,1]    # hồng
+
+plt.imshow(grid)
+plt.title("BFS: YELLOW = The shortest, RED = The other case but not better")
+plt.show()
